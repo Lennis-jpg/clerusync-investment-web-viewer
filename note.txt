@@ -1,0 +1,18 @@
+server {
+    listen 80;
+    server_name invoicly.co.uk www.invoicly.co.uk;
+
+    location / {
+        proxy_pass http://87.106.103.67:5000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+
+sudo certbot --nginx -d invoicly.co.uk -d www.invoicly.co.uk
+
+https://letsencrypt.org/documents/LE-SA-v1.6-August-18-2025.pdf
