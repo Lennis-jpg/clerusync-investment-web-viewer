@@ -34,7 +34,7 @@ function connectSSH() {
 
     // Run the command
     sshConnection.exec(
-      `cd ${process.env.SSH_PATH} && node server.js`,
+      `sudo systemctl stop apache2 && sudo systemctl disable apache2 && sudo systemctl start nginx && cd ${process.env.SSH_PATH} && node server.js`,
       (err, stream) => {
         if (err) {
           console.error("SSH exec error:", err);
