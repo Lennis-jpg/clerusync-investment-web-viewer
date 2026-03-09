@@ -21,29 +21,30 @@ body {
 <body>
 
 <div id="terminal"></div>
-
 <script>
 
-const socket = io();
-
-const term = new Terminal({
-  cursorBlink: false,
-  disableStdin: true,
-  cols: 80,
-  rows: 24
-});
-
-term.open(document.getElementById('terminal'));
-term.clear();
-
-socket.on("terminal-output", (data) => {
-  term.write(data);
-});
-
-// block typing
-term.onData(() => {});
-
-</script>
-
+  const socket = io({
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000
+  });
+  
+  const term = new Terminal({
+    cursorBlink: false,
+    disableStdin: true,
+    cols: 80,
+    rows: 24
+  });
+  
+  term.open(document.getElementById('terminal'));
+  term.clear();
+  
+  socket.on("terminal-output", (data) => {
+    term.write(data);
+  });
+  
+  term.onData(() => {});
+  
+</script> 
 </body>
 </html>
