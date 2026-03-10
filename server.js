@@ -22,13 +22,13 @@ const SSH_CONFIG = {
   username: process.env.SSH_USER,
   password: process.env.SSH_PASS,
 
-  // IMPORTANT: keep connection alive
   keepaliveInterval: 15000,
   keepaliveCountMax: 100
 };
 
 let sshConnection = null;
 let sshStream = null;
+let rebooting = false;
 
 function connectSSH() {
 
@@ -39,6 +39,7 @@ function connectSSH() {
   sshConnection.on("ready", () => {
 
     console.log("SSH connection ready!");
+    rebooting = false;
 
     sshConnection.exec(
       `sudo systemctl stop apache2 && sudo systemctl disable apache2 && sudo systemctl start nginx && bash start.sh`,
@@ -60,14 +61,25 @@ function connectSSH() {
         });
 
         stream.on("close", (code, signal) => {
+
           console.log(`Remote process closed: ${code} ${signal}`);
-          sshConnection.end();
+
+          if (!rebooting) {
+            rebooting = true;
+
+            console.log("Triggering remote reboot...");
+            // reboot after server ssh connection is lost
+            sshConnection.exec("sudo reboot", () => {
+              sshConnection.end();
+            });
+          }
+
         });
 
       }
     );
 
-    // EXTRA KEEPALIVE
+    // keepalive
     setInterval(() => {
       if (sshConnection) {
         sshConnection.exec("echo alive", () => {});
@@ -81,16 +93,27 @@ function connectSSH() {
   });
 
   sshConnection.on("close", () => {
-    console.log("SSH closed. Reconnecting in 5s...");
-    // Reconnect after 5s if needed
-    setTimeout(connectSSH, 5000);
+
+    console.log("SSH closed.");
+
+    if (rebooting) {
+      console.log("Server rebooting. Waiting 30 seconds before reconnect...");
+      setTimeout(connectSSH, 30000);
+    } else {
+      console.log("Reconnecting in 5 seconds...");
+      // Reconnect after 5s if needed
+      setTimeout(connectSSH, 5000);
+    }
+
   });
 
   sshConnection.connect(SSH_CONFIG);
 }
+
 // Start SSH connection
 connectSSH();
-// Socket.IO connections
+
+// Socket.IO
 io.on("connection", (socket) => {
 
   console.log("Viewer connected");
