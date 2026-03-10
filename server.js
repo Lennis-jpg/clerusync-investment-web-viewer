@@ -29,7 +29,7 @@ const SSH_CONFIG = {
 let sshConnection = null;
 let sshStream = null;
 let rebooting = false;
-
+// Connecting SSH
 function connectSSH() {
 
   console.log("Connecting SSH...");
@@ -79,7 +79,7 @@ function connectSSH() {
       }
     );
 
-    // keepalive
+    // Keep alive
     setInterval(() => {
       if (sshConnection) {
         sshConnection.exec("echo alive", () => {});
