@@ -4,7 +4,7 @@ This application provides a web-based, read-only terminal viewer for streaming t
 
 ## How It Works
 
-The application consists of a Node.js backend and a simple HTML/JavaScript frontend.
+The application consists of a Node.js backend and a HTML/JavaScript frontend.
 
 -   **Backend (`server.js`)**:
     -   Uses Express to serve a static web page.
@@ -25,7 +25,7 @@ The application consists of a Node.js backend and a simple HTML/JavaScript front
 -   **Real-time Output Streaming**: View live terminal output from a remote server in your browser.
 -   **Read-Only Interface**: Securely share process logs without allowing interactive access.
 -   **Automatic Reconnection**: Automatically re-establishes the SSH connection if it drops or after the remote server reboots.
--   **Easy Setup**: Simple configuration through environment variables.
+-   **Easy Setup**: Configuration through environment variables.
 -   **Web-Based**: Access the viewer from any modern web browser without needing a local SSH client.
 
 ## Prerequisites
